@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -26,12 +25,28 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					DEFAULT: '#56021F',    // Darkest burgundy
+					light: '#7D1C4A',      // Dark burgundy
+					dark: '#420516',       // Even darker shade
+					foreground: '#FFFFFF'
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
+					DEFAULT: '#7D1C4A',    // Dark burgundy
+					light: '#D17D98',      // Medium pink
+					dark: '#56021F',       // Darkest burgundy
+					foreground: '#FFFFFF'
+				},
+				accent: {
+					DEFAULT: '#D17D98',    // Medium pink
+					light: '#F4CCE9',      // Light pink
+					dark: '#7D1C4A',       // Dark burgundy
+					foreground: '#FFFFFF'
+				},
+				highlight: {
+					DEFAULT: '#F4CCE9',    // Light pink
+					light: '#FFFFFF',      // White
+					dark: '#D17D98',       // Medium pink
+					foreground: '#56021F'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -41,10 +56,6 @@ export default {
 					DEFAULT: 'hsl(var(--muted))',
 					foreground: 'hsl(var(--muted-foreground))'
 				},
-				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
-				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
 					foreground: 'hsl(var(--popover-foreground))'
@@ -53,15 +64,12 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
+				// Color palette from the image
+				palette: {
+					darkest: '#56021F',    // rgb(86, 2, 31)
+					dark: '#7D1C4A',       // rgb(125, 28, 74)
+					medium: '#D17D98',      // rgb(209, 125, 152)
+					light: '#F4CCE9'       // rgb(244, 204, 233)
 				},
 				// HabitNation custom colors
 				'habit-purple': '#8B5CF6',
