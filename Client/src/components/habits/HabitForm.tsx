@@ -1,6 +1,5 @@
-
-import React, { useState, useEffect } from 'react';
-import { Habit, Schedule, useHabits, CATEGORIES } from '@/context/HabitContext';
+import React, { useState } from 'react';
+import { Habit, useHabits, CATEGORIES } from '@/context/HabitContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,39 +19,26 @@ const HabitForm: React.FC<HabitFormProps> = ({ habit, onSubmit, onCancel }) => {
   const { createHabit, updateHabit } = useHabits();
   const { toast } = useToast();
 
-  const [title, setTitle] = useState(habit?.title || '');
+  const [name, setName] = useState(habit?.name || '');
   const [description, setDescription] = useState(habit?.description || '');
-  const [category, setCategory] = useState(habit?.category || 'Health');
-  const [schedule, setSchedule] = useState<Schedule>(habit?.schedule || '7-day');
-  const [scheduleDays, setScheduleDays] = useState<number[]>(habit?.scheduleDays || [0, 1, 2, 3, 4, 5, 6]);
-  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>(habit?.priority || 'medium');
-  const [xpReward, setXpReward] = useState(habit?.xpReward || 10);
-  const [color, setColor] = useState(habit?.color || CATEGORIES[0].color);
-
-  useEffect(() => {
-    // Set color based on selected category
-    const categoryObj = CATEGORIES.find(cat => cat.name === category);
-    if (categoryObj) {
-      setColor(categoryObj.color);
-    }
-  }, [category]);
-
-  useEffect(() => {
-    // Set schedule days based on schedule type
-    if (schedule === '7-day') {
-      setScheduleDays([0, 1, 2, 3, 4, 5, 6]);
-    } else if (schedule === '3-day') {
-      setScheduleDays([1, 3, 5]); // Mon, Wed, Fri
-    } else if (schedule === '30-day') {
-      // For simplicity, we're just setting all days for 30-day schedule
-      setScheduleDays([0, 1, 2, 3, 4, 5, 6]);
-    }
-  }, [schedule]);
+  const [category, setCategory] = useState(habit?.category || CATEGORIES[0]);
+  const [frequency, setFrequency] = useState<Habit['frequency']>(habit?.frequency || 'daily');
+  const [schedule, setSchedule] = useState<Habit['schedule']>(habit?.schedule || {
+    monday: true,
+    tuesday: true,
+    wednesday: true,
+    thursday: true,
+    friday: true,
+    saturday: true,
+    sunday: true
+  });
+  const [timeOfDay, setTimeOfDay] = useState<Habit['timeOfDay']>(habit?.timeOfDay || 'morning');
+  const [xpValue, setXpValue] = useState(habit?.xpValue || 50);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!title.trim()) {
+    if (!name.trim()) {
       toast({
         title: "Error",
         description: "Habit name is required",
@@ -62,27 +48,27 @@ const HabitForm: React.FC<HabitFormProps> = ({ habit, onSubmit, onCancel }) => {
     }
     
     const habitData = {
-      title,
+      name,
       description,
       category,
+      frequency,
       schedule,
-      scheduleDays,
-      priority,
-      xpReward,
-      color,
+      timeOfDay,
+      xpValue,
+      isActive: true
     };
     
     if (isEditing && habit) {
       updateHabit(habit.id, habitData);
       toast({
         title: "Habit updated",
-        description: `${title} has been updated successfully.`,
+        description: `${name} has been updated successfully.`,
       });
     } else {
       createHabit(habitData);
       toast({
         title: "Habit created",
-        description: `${title} has been added to your habits.`,
+        description: `${name} has been added to your habits.`,
       });
     }
     
@@ -91,26 +77,21 @@ const HabitForm: React.FC<HabitFormProps> = ({ habit, onSubmit, onCancel }) => {
     }
   };
 
-  const handleDayToggle = (day: number) => {
-    if (schedule !== 'custom') {
-      setSchedule('custom');
-    }
-    
-    if (scheduleDays.includes(day)) {
-      setScheduleDays(scheduleDays.filter(d => d !== day));
-    } else {
-      setScheduleDays([...scheduleDays, day].sort((a, b) => a - b));
-    }
+  const handleDayToggle = (day: keyof Habit['schedule']) => {
+    setSchedule(prev => ({
+      ...prev,
+      [day]: !prev[day]
+    }));
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-1">
       <div>
-        <Label htmlFor="title">Habit Name</Label>
+        <Label htmlFor="name">Habit Name</Label>
         <Input
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          id="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           placeholder="What habit would you like to build?"
           className="mt-1"
           required
@@ -141,14 +122,8 @@ const HabitForm: React.FC<HabitFormProps> = ({ habit, onSubmit, onCancel }) => {
             </SelectTrigger>
             <SelectContent>
               {CATEGORIES.map((cat) => (
-                <SelectItem key={cat.name} value={cat.name}>
-                  <div className="flex items-center">
-                    <div 
-                      className="w-3 h-3 rounded-full mr-2" 
-                      style={{ backgroundColor: cat.color }}
-                    />
-                    {cat.name}
-                  </div>
+                <SelectItem key={cat} value={cat}>
+                  {cat}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -156,60 +131,72 @@ const HabitForm: React.FC<HabitFormProps> = ({ habit, onSubmit, onCancel }) => {
         </div>
         
         <div>
-          <Label htmlFor="priority">Priority</Label>
+          <Label htmlFor="timeOfDay">Time of Day</Label>
           <Select
-            value={priority}
-            onValueChange={(val: 'low' | 'medium' | 'high') => setPriority(val)}
+            value={timeOfDay}
+            onValueChange={(value) => setTimeOfDay(value as Habit['timeOfDay'])}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select priority" />
+              <SelectValue placeholder="Select time of day" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="low">Low (5 XP)</SelectItem>
-              <SelectItem value="medium">Medium (10 XP)</SelectItem>
-              <SelectItem value="high">High (20 XP)</SelectItem>
+              <SelectItem value="morning">Morning</SelectItem>
+              <SelectItem value="afternoon">Afternoon</SelectItem>
+              <SelectItem value="evening">Evening</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
-      
+
       <div>
-        <Label htmlFor="schedule">Schedule</Label>
+        <Label htmlFor="frequency">Frequency</Label>
         <Select
-          value={schedule}
-          onValueChange={(val: Schedule) => setSchedule(val)}
+          value={frequency}
+          onValueChange={(value) => setFrequency(value as Habit['frequency'])}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Select schedule" />
+            <SelectValue placeholder="Select frequency" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="7-day">Every day</SelectItem>
-            <SelectItem value="3-day">3 days a week (Mon, Wed, Fri)</SelectItem>
-            <SelectItem value="30-day">Monthly cycle</SelectItem>
-            <SelectItem value="custom">Custom days</SelectItem>
+            <SelectItem value="daily">Daily</SelectItem>
+            <SelectItem value="weekly">Weekly</SelectItem>
+            <SelectItem value="monthly">Monthly</SelectItem>
           </SelectContent>
         </Select>
       </div>
-      
-      {schedule === 'custom' && (
-        <div>
-          <Label className="block mb-2">Custom Schedule</Label>
-          <div className="flex space-x-2 flex-wrap gap-y-2">
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
-              <div key={day} className="flex items-center space-x-1">
-                <Checkbox 
-                  id={`day-${index}`}
-                  checked={scheduleDays.includes(index)}
-                  onCheckedChange={() => handleDayToggle(index)}
-                />
-                <Label htmlFor={`day-${index}`} className="text-sm cursor-pointer">
-                  {day}
-                </Label>
-              </div>
-            ))}
-          </div>
+
+      <div>
+        <Label className="block mb-2">Schedule</Label>
+        <div className="grid grid-cols-7 gap-2">
+          {(['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const).map((day) => (
+            <div key={day} className="flex flex-col items-center">
+              <Checkbox 
+                id={`day-${day}`}
+                checked={schedule[day]}
+                onCheckedChange={() => handleDayToggle(day)}
+              />
+              <Label htmlFor={`day-${day}`} className="text-sm mt-1">
+                {day.charAt(0).toUpperCase() + day.slice(1, 3)}
+              </Label>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
+
+      <div>
+        <Label htmlFor="xpValue">XP Value</Label>
+        <Select
+          value={xpValue.toString()}
+          onValueChange={(value) => setXpValue(parseInt(value))}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select XP value" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="50">Medium (50 XP)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       
       <div className="flex justify-end space-x-3 pt-4">
         {onCancel && (
@@ -221,7 +208,7 @@ const HabitForm: React.FC<HabitFormProps> = ({ habit, onSubmit, onCancel }) => {
             Cancel
           </Button>
         )}
-        <Button type="submit" className="btn btn-primary">
+        <Button type="submit" className="bg-habit-purple text-white hover:bg-habit-purple/90">
           {isEditing ? 'Update Habit' : 'Create Habit'}
         </Button>
       </div>

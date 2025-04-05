@@ -7,8 +7,17 @@ export interface Habit {
   name: string;
   description: string;
   user: string;
+  category: string;
   frequency: 'daily' | 'weekly' | 'monthly';
-  schedule: string[];
+  schedule: {
+    monday: boolean;
+    tuesday: boolean;
+    wednesday: boolean;
+    thursday: boolean;
+    friday: boolean;
+    saturday: boolean;
+    sunday: boolean;
+  };
   timeOfDay: 'morning' | 'afternoon' | 'evening';
   streak: number;
   longestStreak: number;
@@ -16,6 +25,7 @@ export interface Habit {
   xpValue: number;
   isActive: boolean;
   createdAt: Date;
+  duration: number; // Duration in minutes
 }
 
 export interface HabitLog {
@@ -244,9 +254,9 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (!habit.isActive) return false;
       
       const dayOfWeek = today.getDay();
-      const dayName = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][dayOfWeek];
+      const dayName = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][dayOfWeek] as keyof Habit['schedule'];
       
-      return habit.schedule.includes(dayName);
+      return habit.schedule[dayName];
     });
   };
 
