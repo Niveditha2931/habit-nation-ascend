@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PlusCircle, Flame, Calendar, ListTodo, LogOut, Award, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Community from '../ui/community';
 
 type Habit = {
   id: string;
@@ -27,6 +28,9 @@ const Dashboard: React.FC = () => {
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
   const navigate = useNavigate();
+  const handleImageClick = () => {
+    return <Community/>// Mention your route here
+  };
 
   const dailyHabits = getDailyHabits();
 
@@ -51,6 +55,12 @@ const Dashboard: React.FC = () => {
           <div className="flex items-center space-x-4">
             <div className="flex items-center">
               <div className="mr-3 text-right hidden sm:block">
+                <div className='mr-12 cursor-pointer' onClick={()=>handleImageClick} >
+                  <img src=".././public/logo1.png" 
+                  width={50}
+                  height={100} alt="logo"  />
+
+                </div>
                 <div className="font-medium">{user?.name}</div>
                 <div className="text-sm text-gray-500">Level {user?.level}</div>
               </div>
