@@ -2,7 +2,7 @@
 import React from 'react';
 import { Habit, useHabits } from '@/context/HabitContext';
 import { useToast } from '@/hooks/use-toast';
-import { CheckCircle, Circle, Fire, Edit, Trash2 } from 'lucide-react';
+import { CheckCircle, Circle, Flame, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -108,7 +108,7 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onEdit }) => {
       <div className="flex justify-between items-center mt-4">
         <div className="flex items-center space-x-2">
           <div className="flex items-center">
-            <Fire size={16} className="text-habit-orange mr-1" />
+            <Flame size={16} className="text-habit-orange mr-1" />
             <span className="text-sm font-medium">{habit.streakCount} streak</span>
           </div>
           <div className="text-sm font-medium">
