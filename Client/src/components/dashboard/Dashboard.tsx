@@ -5,13 +5,18 @@ import Stats from '@/components/ui/Stats';
 import HabitCard from '@/components/habits/HabitCard';
 import HabitForm from '@/components/habits/HabitForm';
 import Companion from '@/components/ai/Companion';
+import ExampleHabits from '@/components/ExampleHabits';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PlusCircle, Flame, Calendar, ListTodo, LogOut, Award, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
 import Community from '../ui/community';
+=======
+import { cn } from '@/lib/utils';
+>>>>>>> f4b9d5d6c0bd3276c6311c3e651ef26035529769
 
 type Habit = {
   id: string;
@@ -164,10 +169,11 @@ const Dashboard: React.FC = () => {
                     Categories
                   </TabsTrigger>
                 </TabsList>
+                
 
                 {/* Daily */}
                 <TabsContent value="daily" className="mt-4">
-                  <div className="space-y-4">
+                  <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                     {dailyHabits.length > 0 ? (
                       dailyHabits.map(habit => (
                         <HabitCard key={habit.id} habit={habit} onEdit={handleEditHabit} />
@@ -177,13 +183,21 @@ const Dashboard: React.FC = () => {
                         <CardContent className="flex flex-col items-center justify-center py-10">
                           <div className="text-center">
                             <h3 className="font-semibold text-lg mb-2">No habits for today</h3>
-                            <p className="text-gray-500 mb-4">Add a new habit to get started!</p>
-                            <Button
-                              onClick={() => setShowAddHabitDialog(true)}
-                              className="bg-habit-purple text-white hover:bg-habit-purple/90"
-                            >
-                              Add Your First Habit
-                            </Button>
+                            <p className="text-gray-500 mb-4">Add some habits to get started!</p>
+                            <div className="space-y-4">
+                              <Button
+                                onClick={() => setShowAddHabitDialog(true)}
+                                className="bg-primary text-white hover:bg-primary-dark"
+                              >
+                                Add Your First Habit
+                              </Button>
+                              {habits.length === 0 && (
+                                <div className="pt-4">
+                                  <p className="text-gray-500 mb-2">Or start with some example habits:</p>
+                                  <ExampleHabits />
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
@@ -193,7 +207,7 @@ const Dashboard: React.FC = () => {
 
                 {/* All Habits */}
                 <TabsContent value="all" className="mt-4">
-                  <div className="space-y-4">
+                  <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                     {habits.length > 0 ? (
                       habits.map(habit => (
                         <HabitCard key={habit.id} habit={habit} onEdit={handleEditHabit} />
@@ -201,7 +215,22 @@ const Dashboard: React.FC = () => {
                     ) : (
                       <Card>
                         <CardContent className="flex flex-col items-center justify-center py-10">
-                          <p className="text-gray-500">You don't have any habits yet.</p>
+                          <div className="text-center">
+                            <h3 className="font-semibold text-lg mb-2">No habits yet</h3>
+                            <p className="text-gray-500 mb-4">Start by adding some habits to track!</p>
+                            <div className="space-y-4">
+                              <Button
+                                onClick={() => setShowAddHabitDialog(true)}
+                                className="bg-primary text-white hover:bg-primary-dark"
+                              >
+                                Add Your First Habit
+                              </Button>
+                              <div className="pt-4">
+                                <p className="text-gray-500 mb-2">Or start with some example habits:</p>
+                                <ExampleHabits />
+                              </div>
+                            </div>
+                          </div>
                         </CardContent>
                       </Card>
                     )}
@@ -210,47 +239,82 @@ const Dashboard: React.FC = () => {
 
                 {/* Categories */}
                 <TabsContent value="categories" className="mt-4">
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    <Button
-                      variant={selectedCategory === null ? 'default' : 'outline'}
-                      className="rounded-full"
-                      onClick={() => setSelectedCategory(null)}
-                    >
-                      All
-                    </Button>
-                    {CATEGORIES.map(category => (
+                  <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                    <div className="flex flex-wrap gap-2 mb-4">
                       <Button
-                        key={category.name}
-                        variant={selectedCategory === category.name ? 'default' : 'outline'}
+                        variant={selectedCategory === null ? 'default' : 'outline'}
                         className="rounded-full"
-                        onClick={() => setSelectedCategory(category.name)}
-                        style={{
-                          backgroundColor: selectedCategory === category.name ? category.color : 'transparent',
-                          color: selectedCategory === category.name ? 'white' : 'inherit',
-                          borderColor: category.color,
-                        }}
+                        onClick={() => setSelectedCategory(null)}
                       >
-                        {category.name}
+                        All
                       </Button>
-                    ))}
-                  </div>
+                      {CATEGORIES.map((category) => (
+                        <Button
+                          key={category}
+                          variant={selectedCategory === category ? 'default' : 'outline'}
+                          className={cn(
+                            "rounded-full",
+                            selectedCategory === category ? "bg-habit-purple text-white" : "text-habit-purple"
+                          )}
+                          onClick={() => setSelectedCategory(category)}
+                        >
+                          {category}
+                        </Button>
+                      ))}
+                    </div>
 
-                  <div className="space-y-4">
-                    {filteredHabits.length > 0 ? (
-                      filteredHabits.map(habit => (
-                        <HabitCard key={habit.id} habit={habit} onEdit={handleEditHabit} />
-                      ))
-                    ) : (
-                      <Card>
-                        <CardContent className="flex flex-col items-center justify-center py-8">
-                          <p className="text-gray-500">
-                            {selectedCategory
-                              ? `No habits in ${selectedCategory} category.`
-                              : 'No habits for today.'}
-                          </p>
-                        </CardContent>
-                      </Card>
-                    )}
+                    <div className="space-y-4">
+                      {selectedCategory ? (
+                        habits.filter(habit => habit.category === selectedCategory).length > 0 ? (
+                          habits
+                            .filter(habit => habit.category === selectedCategory)
+                            .map(habit => (
+                              <HabitCard key={habit.id} habit={habit} onEdit={handleEditHabit} />
+                            ))
+                        ) : (
+                          <Card>
+                            <CardContent className="flex flex-col items-center justify-center py-8">
+                              <p className="text-gray-500">
+                                No habits in {selectedCategory} category.
+                              </p>
+                              <Button
+                                onClick={() => {
+                                  setEditingHabit(null);
+                                  setShowAddHabitDialog(true);
+                                }}
+                                className="mt-4 bg-habit-purple text-white hover:bg-habit-purple/90"
+                              >
+                                <PlusCircle className="mr-1.5" size={18} />
+                                Add {selectedCategory} Habit
+                              </Button>
+                            </CardContent>
+                          </Card>
+                        )
+                      ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {CATEGORIES.map((category) => {
+                            const categoryHabits = habits.filter(h => h.category === category);
+                            return (
+                              <Card key={category} className="relative overflow-hidden">
+                                <CardContent className="p-6">
+                                  <h3 className="text-lg font-semibold mb-2">{category}</h3>
+                                  <p className="text-sm text-gray-500 mb-4">
+                                    {categoryHabits.length} habit{categoryHabits.length !== 1 ? 's' : ''}
+                                  </p>
+                                  <Button
+                                    variant="outline"
+                                    className="w-full"
+                                    onClick={() => setSelectedCategory(category)}
+                                  >
+                                    View Habits
+                                  </Button>
+                                </CardContent>
+                              </Card>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </TabsContent>
               </Tabs>

@@ -1,33 +1,23 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Flame } from 'lucide-react';
+import { useHabits } from '@/context/HabitContext';
 
-interface Habit {
-  id: string;
-  name: string;
-  frequency: string;
-  completedDates: string[];
-  streak: number;
-  xpValue: number;
-}
+const Stats: React.FC = () => {
+  const { habits } = useHabits();
 
-interface StatsProps {
-  habits: Habit[];
-}
-
-const Stats: React.FC<StatsProps> = ({ habits = [] }) => {
-  const calculateTotalXP = (habits: Habit[]) => {
+  const calculateTotalXP = () => {
     if (!habits || habits.length === 0) return 0;
     return habits.reduce((total, habit) => total + (habit.xpValue || 0), 0);
   };
 
-  const getLongestStreak = (habits: Habit[]) => {
+  const getLongestStreak = () => {
     if (!habits || habits.length === 0) return 0;
-    return Math.max(...habits.map(habit => habit.streak || 0));
+    return Math.max(...habits.map(habit => habit.longestStreak || 0));
   };
 
-  const totalXP = calculateTotalXP(habits);
-  const longestStreak = getLongestStreak(habits);
+  const totalXP = calculateTotalXP();
+  const longestStreak = getLongestStreak();
 
   return (
     <div className="w-full bg-background p-4 rounded-lg">
