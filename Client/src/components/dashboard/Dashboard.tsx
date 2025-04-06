@@ -12,17 +12,33 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PlusCircle, Flame, Calendar, ListTodo, LogOut, Award, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-<<<<<<< HEAD
-import Community from '../ui/community';
-=======
 import { cn } from '@/lib/utils';
->>>>>>> f4b9d5d6c0bd3276c6311c3e651ef26035529769
+import Community from '../ui/Community';
 
 type Habit = {
   id: string;
-  title: string;
+  name: string;
+  description: string;
+  user: string;
   category: string;
-  [key: string]: any;
+  frequency: 'daily' | 'weekly' | 'monthly';
+  schedule: {
+    monday: boolean;
+    tuesday: boolean;
+    wednesday: boolean;
+    thursday: boolean;
+    friday: boolean;
+    saturday: boolean;
+    sunday: boolean;
+  };
+  timeOfDay: 'morning' | 'afternoon' | 'evening';
+  streak: number;
+  longestStreak: number;
+  completedDates: { date: Date; completed: boolean }[];
+  xpValue: number;
+  isActive: boolean;
+  createdAt: Date;
+  duration: number;
 };
 
 const Dashboard: React.FC = () => {
@@ -33,10 +49,6 @@ const Dashboard: React.FC = () => {
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
   const navigate = useNavigate();
-  const handleImageClick = () => {
-    return <Community/>// Mention your route here
-  };
-
   const dailyHabits = getDailyHabits();
 
   const filteredHabits = selectedCategory
@@ -60,17 +72,11 @@ const Dashboard: React.FC = () => {
           <div className="flex items-center space-x-4">
             <div className="flex items-center">
               <div className="mr-3 text-right hidden sm:block">
-                <div className='mr-12 cursor-pointer' onClick={()=>handleImageClick} >
-                  <img src=".././public/logo1.png" 
-                  width={50}
-                  height={100} alt="logo"  />
-
-                </div>
-                <div className="font-medium">{user?.name}</div>
+                <div className="font-medium">{user?.username}</div>
                 <div className="text-sm text-gray-500">Level {user?.level}</div>
               </div>
-              <div className="h-10 w-10 rounded-full bg-habit-purple/10 flex items-center justify-center text-habit-purple font-medium">
-                {user?.name?.charAt(0).toUpperCase() || 'U'}
+              <div className="h-10 w-10 rounded-full bg-habit-purple/10 flex items-center justify-center text-habit-purple font-medium cursor-pointer" onClick={() => navigate('/leaderboard')}>
+                <Award size={20} />
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={logout}>
@@ -89,50 +95,27 @@ const Dashboard: React.FC = () => {
 
         <div className="flex justify-between items-center mb-8 relative">
           <h1 className="text-3xl font-bold text-gray-900">
-            Welcome back, {user?.username || user?.name || 'User'}!
+            Welcome back, {user?.username || 'User'}!
           </h1>
 
           {/* Hoverable Rewards/Shop Menu */}
-          <div className="flex space-x-4 relative z-10">
-            {/* Rewards */}
-            <div
-              className="relative"
-              onMouseEnter={() => setHoveredTab('rewards')}
-              onMouseLeave={() => setHoveredTab(null)}
-            >
-              <Button variant="outline" className="flex items-center space-x-1">
-                <Award size={16} />
-                <span>Rewards</span>
-              </Button>
-              {hoveredTab === 'rewards' && (
-                <div className="absolute right-0 mt-2 w-60 bg-white shadow-lg border border-gray-200 rounded-md p-3 space-y-1">
-                  <div className="text-sm font-semibold text-gray-700 mb-2">Reward Options</div>
-                  <div className="text-sm text-gray-600 hover:text-habit-purple cursor-pointer">🎟️ Coupons</div>
-                  <div className="text-sm text-gray-600 hover:text-habit-purple cursor-pointer">⏳ Time Machine</div>
-                  <div className="text-sm text-gray-600 hover:text-habit-purple cursor-pointer">🛡️ Protection Points</div>
-                </div>
-              )}
-            </div>
-
-            {/* Shop */}
-            <div
-              className="relative"
-              onMouseEnter={() => setHoveredTab('shop')}
-              onMouseLeave={() => setHoveredTab(null)}
-            >
-              <Button variant="outline" className="flex items-center space-x-1">
-                <User size={16} />
-                <span>Shop</span>
-              </Button>
-              {hoveredTab === 'shop' && (
-                <div className="absolute right-0 mt-2 w-60 bg-white shadow-lg border border-gray-200 rounded-md p-3 space-y-1">
-                  <div className="text-sm font-semibold text-gray-700 mb-2">Shop Items</div>
-                  <div className="text-sm text-gray-600 hover:text-habit-blue cursor-pointer">⌚ Watches</div>
-                  <div className="text-sm text-gray-600 hover:text-habit-blue cursor-pointer">👟 Shoes</div>
-                  <div className="text-sm text-gray-600 hover:text-habit-blue cursor-pointer">💄 Beauty Products</div>
-                </div>
-              )}
-            </div>
+          <div className="flex space-x-4">
+            <button className="p-2 text-gray-400 hover:text-habit-purple">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+            </button>
+            <button className="p-2 text-gray-400 hover:text-habit-purple">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c.414 0 .75.336.75.75v3.5c0 .414-.336.75-.75.75h-3.5a.75.75 0 010-1.5h2.25V8.75c0-.414.336-.75.75-.75z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3.75a8.25 8.25 0 100 16.5 8.25 8.25 0 000-16.5z" />
+              </svg>
+            </button>
+            <button onClick={() => navigate('/leaderboard')} className="p-2 text-gray-400 hover:text-habit-purple">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18h18V3H3zm16 16H5V5h14v14zM9 9h6v6H9V9z" />
+              </svg>
+            </button>
           </div>
         </div>
 
